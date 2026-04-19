@@ -1,5 +1,10 @@
 #include "frame.h"
 
+int Frame::size()
+{
+    return this->payload.size() + 4 * 3;
+}
+
 void Frame::display(ostream &out) const
 {
     string typeStr = (type == DATA) ? "DATA" : "ACK";

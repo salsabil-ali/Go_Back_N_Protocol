@@ -20,6 +20,8 @@ struct Frame
     std::string payload;
     int checksum;
 
+    int size();
+
     void display(std::ostream &cout) const; // done
     // Overloaded output operator
     friend std::ostream &operator<<(std::ostream &out, const Frame &aFrame);
