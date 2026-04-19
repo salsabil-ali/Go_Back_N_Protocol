@@ -3,7 +3,9 @@
 #include <iostream>
 #include <string>
 #include <fstream>
+#include <queue>
 #include "frame.h"
+#include <atomic>
 
 using namespace std;
 
@@ -11,13 +13,20 @@ class Receiver
 {
 private:
     int expected_seq_num;
+    FrameArchitect arch;
     string output_filename;
-
-public:
+    std::atomic<bool> running;
+    
+    public:
     Receiver(string filename);
-    void receiveFrame(Frame f, FrameArchitect &arch);
-
-private:
+    void receiveFrame(Frame f);
+    queue<Frame> Receiverbuffer;
+    queue<Frame> get_Receiverbuffer();
+    bool get_running();
+    void set_running(bool running);
+    ~Receiver();
+    
+    private:
     void sendAck(int seq_no);
     void deliverData(string data);
 };

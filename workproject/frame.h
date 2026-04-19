@@ -49,11 +49,12 @@ class SenderBuffer
 {
 private:
     std::vector<Frame> windowBuffer;
+    int i = 0;
 
 public:
     void addToBuffer(const Frame &f);
 
-    Frame getFrameFromBuffer(int seq);
+    Frame getFrameFromBuffer();
 
     void clearBufferUpTo(int ack_no);
 };

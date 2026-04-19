@@ -10,6 +10,7 @@
 #include <fstream>
 #include "frame.h"
 #include "Receiver.h"
+#include <atomic>
 
 using namespace std;
 using namespace std::chrono;
@@ -20,26 +21,32 @@ private:
     FrameArchitect arch;
     vector<Frame> slidingWindow;
     queue<string> dataQueue;
-    SenderBuffer senderBuffer;
-
+    std::atomic<bool> running{true};
+    
     int windowSize, send_base, next_seq_num, timeoutMs;
-    bool running = true;
     Receiver *receiver;
-
+    
     mutex windowMutex;
-
-public:
+    
+    public:
+    SenderBuffer senderBuffer;
     Sender(int N, int timeout, Receiver *r);
     ~Sender();
     void addData(vector<string> msgs);
     void start();
     void tick();
-    void receiveACK(Frame ackFrame);
+    void receiveACK(Frame *ackFrame);
     bool isFinished();
+    FrameArchitect get_arch() const;
+    int get_send_base() const;
+    int get_next_seq_num() const;
+    bool get_running();
+    void set_running(bool running);
+    void run();
 
 private:
     void sendNewFrames();
     void resendAll();
-    void sendFrame(Frame frame);
+    void sendFrame(Frame *frame);
 };
 #endif

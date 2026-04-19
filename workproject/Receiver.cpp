@@ -1,10 +1,16 @@
 #include "Receiver.h"
+#include "sender.h"
 
 Receiver::Receiver(string filename) : expected_seq_num(0), output_filename(filename) {}
 
-void Receiver::receiveFrame(Frame f, FrameArchitect &arch)
+Receiver::~Receiver()
 {
-    if (!arch.isValid(f))
+    this->running = false;
+}
+
+void Receiver::receiveFrame(Frame f)
+{
+    if (!this->arch.isValid(f))
     {
         cout << "Error (Checksum failed) \n";
         return;
@@ -27,7 +33,7 @@ void Receiver::sendAck(int seq_no)
 {
     FrameArchitect arch;
     Frame ackFrame = arch.createFrame(ACK, 0, seq_no, "");
-    // receiveAck(ackFrame);  function on the sender's side to get the ack
+    this->Receiverbuffer.push(ackFrame);
 }
 
 void Receiver::deliverData(string data)
@@ -43,6 +49,21 @@ void Receiver::deliverData(string data)
     {
         cerr << "Could not write to file \n";
     }
+}
+
+queue<Frame> Receiver::get_Receiverbuffer()
+{
+    return this->Receiverbuffer;
+}
+
+bool Receiver::get_running()
+{
+    return this->running.load();
+}
+
+void Receiver::set_running(bool running)
+{
+    this->running = running;
 }
 
 // int main() {

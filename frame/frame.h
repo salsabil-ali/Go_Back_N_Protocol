@@ -1,7 +1,7 @@
 #pragma once
 #include <iostream>
 #include <string>
-#include <vector>
+#include <queue>
 #include <algorithm>
 
 using namespace std;
@@ -46,7 +46,7 @@ public:
 class SenderBuffer
 {
 private:
-    std::vector<Frame> windowBuffer;
+    queue<Frame> windowBuffer;
 
 public:
     void addToBuffer(const Frame &f);

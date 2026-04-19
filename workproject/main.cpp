@@ -5,56 +5,112 @@
 #include "sender.h"
 #include "Receiver.h"
 #include "Network.h"
+#include <thread>
 
-using namespace std;
+// int main()
+// {
+//     Frame* tempframe;
+//     FrameArchitect arch;
+//     Receiver receiver("output.txt");
+//     Sender sender(3, 3000, &receiver);
 
-// A wrapper to simulate the unreliable network path
-void transmit(Frame f, Receiver& rec, FrameArchitect& arch, int timeout) {
-    Frame copy = f; // Work on a copy to simulate wire changes
-    if (chaosFrame(copy, timeout)) {
-        rec.receiveFrame(copy, arch);
+//     sender.start();
+//     sender.addData({"P1", "P2", "P3", "P4", "P5"});
+
+//     cout << "Window=3, Timeout=3s\n\n";
+
+//     int tick = 0;
+//     while (!sender.isFinished() && tick++ < 60)
+//     { // ← 60 tick بدل 40
+//         sender.tick();
+        
+//         // ACKs تدريجياً
+//         if (tick == 8)
+//         {
+//             tempframe = &(receiver.get_Receiverbuffer().at(1));
+//             receiver.get_Receiverbuffer().pop_back();
+//             sender.receiveACK(tempframe);
+//             cout << "\n--- ACK[1] ---\n";
+//             Frame ack1 = arch.createFrame(ACK, 0, 1, "");
+//         }
+//         if (tick == 20)
+//         {
+//             cout << "\n--- ACK[3] ---\n";
+//             Frame ack2 = arch.createFrame(ACK, 0, 3, "");
+//         }
+//         if (tick == 35)
+//         {
+//             cout << "\n--- ACK[4] ---\n";
+//             Frame ack3 = arch.createFrame(ACK, 0, 4, "");
+//         }
+
+//         cout << "Tick " << tick << " | base=" << sender.get_send_base()
+//              << " next=" << sender.get_next_seq_num() << endl;
+//         this_thread::sleep_for(milliseconds(500));
+//     }
+//     return 0;
+// }
+
+int main()
+{
+    mutex mainmutex;
+    Receiver receiver("output.txt");
+    Sender sender(3, 3000, &receiver);
+
+    sender.start();
+
+    thread senderThread([&sender, &receiver] {
+        while (sender.get_running())
+        {
+            sender.tick();
+            if (!receiver.get_Receiverbuffer().empty())
+            {
+                sender.receiveACK(&(receiver.get_Receiverbuffer().front()));
+                receiver.get_Receiverbuffer().pop();
+            }
+        }
+    });
+
+    thread receiverThread([&receiver, &sender] {
+        while (receiver.get_running())
+        {
+            receiver.receiveFrame(sender.senderBuffer.getFrameFromBuffer());
+        }
+    });
+
+    vector<string> data;
+
+    data = {"We", "Love", "Doctor", "Hossam"};
+
+    {
+        lock_guard<mutex> lock(mainmutex);
+        sender.addData(data);
+    }
+    char reply = 'a';
+
+    cout << "to quit the program enter x";
+
+    while (reply != 'x')
+    {
+        cin>>reply;
+    }
+
+    {
+        lock_guard<mutex> lock(mainmutex);
+
+        sender.set_running(false);
+        receiver.set_running(false);
     }
 }
 
-int main() {
-    srand(static_cast<unsigned>(time(0)));
+// int main()
+// {
+//     Receiver receiver("Received_output");
+//     Sender sender(5, 3000, &receiver);
 
-    // Configuration
-    int windowSize = 3;
-    int timeoutMs = 200;
-    string outputFile = "received_output.txt";
-    
-    // Clear previous output file
-    remove(outputFile.c_str());
+//     vector<string> data = {"Mahmoud", "haydrab", "ely", "3amalo", "el", "sender", "w", "el", "receiver"};
 
-    Receiver receiver(outputFile);
-    Sender sender(windowSize, timeoutMs, &receiver);
+//     sender.start();
+//     sender.addData(data);
 
-    // --- Scenario 1: Successful Sequential Transmission ---
-    cout << "--- SCENARIO 1: Basic Transmission ---" << endl;
-    sender.addData({"Hello ", "this ", "is ", "a ", "test."});
-    
-    // Process the queue
-    while (!sender.isFinished()) {
-        sender.tick();
-        this_thread::sleep_for(milliseconds(100));
-    }
-    cout << "Scenario 1 Complete.\n" << endl;
-
-    // --- Scenario 2: Heavy Network Chaos (Drops & Corruption) ---
-    // Note: To truly see the resend logic, we rely on the Sender's background thread
-    cout << "--- SCENARIO 2: Unreliable Network (Resends) ---" << endl;
-    sender.start(); // Starts the timeout monitor thread
-    sender.addData({"Data_A ", "Data_B ", "Data_C ", "Data_D "});
-
-    int attempts = 0;
-    while (!sender.isFinished() && attempts < 20) {
-        sender.tick(); 
-        this_thread::sleep_for(milliseconds(300));
-        attempts++;
-    }
-
-    cout << "Scenario 2 Complete. Check " << outputFile << " for results." << endl;
-
-    return 0;
-}
+// }

@@ -1,6 +1,6 @@
 # Compiler and Flags
 CXX = g++
-CXXFLAGS = -Wall -std=c++11 -pthread
+CXXFLAGS = -Wall -std=c++11 -pthread -g
 
 # Target executable name
 TARGET = network_sim

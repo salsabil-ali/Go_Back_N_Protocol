@@ -51,22 +51,27 @@ void SenderBuffer::addToBuffer(const Frame &f)
     windowBuffer.push_back(f);
 }
 
-Frame SenderBuffer::getFrameFromBuffer(int seq)
+Frame SenderBuffer::getFrameFromBuffer()
 {
-    for (const auto &f : windowBuffer)
+    if (!windowBuffer.empty() && i < this->windowBuffer.size())
     {
-        if (f.seq_no == seq)
-            return f;
+        return this->windowBuffer.at(this->i++);
     }
-    return {}; // Return empty
+    else
+    {
+        return {};
+    }
 }
 
 void SenderBuffer::clearBufferUpTo(int ack_no)
 {
+    int initialSize = this->windowBuffer.size();
     // Removes frames that have been successfully acknowledged
     windowBuffer.erase(
         remove_if(windowBuffer.begin(), windowBuffer.end(), //:) AI ,don't ask me
                   [ack_no](const Frame &f)
                   { return f.seq_no <= ack_no; }),
         windowBuffer.end());
+
+    this->i = (i - this->windowBuffer.size() - initialSize);
 }
