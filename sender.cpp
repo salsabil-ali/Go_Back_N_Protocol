@@ -11,10 +11,6 @@
 using namespace std;
 using namespace std::chrono;
 
-
-
-
-
 class Sender {
 private:
     FrameArchitect arch;
@@ -25,7 +21,6 @@ private:
     int windowSize, send_base, next_seq_num, timeoutMs;
     bool running = true;
     Receiver* receiver;
-
 
     mutex windowMutex;
 
@@ -88,7 +83,7 @@ private:
     void sendNewFrames() {
         while (next_seq_num < send_base + windowSize && !dataQueue.empty()) {
             string msg = dataQueue.front(); dataQueue.pop();
-            Frame frame = arch1.createFrame(DATA, next_seq_num, 0, msg);
+            Frame frame = arch.createFrame(DATA, next_seq_num, 0, msg);
 
             slidingWindow.push_back(frame);
             senderBuffer.addToBuffer(frame);

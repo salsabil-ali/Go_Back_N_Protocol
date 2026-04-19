@@ -45,7 +45,7 @@ private:
 
 public:
     void addToBuffer(const Frame& f);
-
+    
     Frame getFrameFromBuffer(int seq);
 
     void clearBufferUpTo(int ack_no);
