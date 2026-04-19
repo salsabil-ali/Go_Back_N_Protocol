@@ -1,7 +1,7 @@
 #include <iostream>
 #include <string>
 #include <fstream>
-#include "frame.h"
+#include "frame/frame.h"
 
 using namespace std;
 
@@ -21,7 +21,7 @@ public:
         }
 
         if (f.seq_no == expected_seq_num) {
-            cout << "Accepted frame \n ";
+            cout << "Accepted frame \n";
             deliverData(f.payload);
             sendAck(expected_seq_num);
             expected_seq_num++;
