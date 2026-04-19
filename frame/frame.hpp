@@ -3,10 +3,12 @@
 #include <string>
 #include <vector>
 
+using namespace std;
 
-enum FrameType { DATA, ACK }; 
+enum FrameType {DATA, ACK}; 
 
-struct Frame {
+struct Frame
+{
     FrameType type;
     int seq_no;
     int ack_no;
@@ -19,16 +21,17 @@ struct Frame {
     friend ostream& operator<<(std::ostream& out, const Frame& aFrame);
 };
 
-class FrameArchitect {
+class FrameArchitect
+{
 public:
-    //  Checksum Implementation
+    // Checksum Implementation
     // This calculates a simple sum of all integer values and characters in the payload
-    //di 3a4an check  if the message changed or it as same
+    // di 3a4an check  if the message changed or it as same
     int calculateChecksum(FrameType type, int seq, int ack, const std::string& data);
 
 
     // Function to verify if a received frame is corrupted
-    //here if the receiver take time to send the ACK or didn't send it 
+    // here if the receiver take time to send the ACK or didn't send it 
     bool isValid(const Frame& f);
 
 
@@ -37,9 +40,10 @@ public:
 };
 
 
-//  Buffer 
-// This stores frames  in case of a Timeout (copy of the frame and then clear it when transmit successfully :))
-class SenderBuffer {
+// Buffer 
+// This stores frames in case of a Timeout (copy of the frame and then clear it when transmit successfully :))
+class SenderBuffer
+{
 private:
     std::vector<Frame> windowBuffer;
 
