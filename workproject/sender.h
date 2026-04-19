@@ -1,3 +1,5 @@
+#ifndef __senderh
+#define __senderh
 #include <iostream>
 #include <thread>
 #include <chrono>
@@ -40,3 +42,4 @@ private:
     void resendAll();
     void sendFrame(Frame frame);
 };
+#endif

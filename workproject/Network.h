@@ -1,3 +1,5 @@
+#ifndef __NetworkH
+#define __NetworkH
 #include <iostream>
 #include <cstdlib> // for rand()
 #include <thread>
@@ -14,3 +16,4 @@ void corruptFrame(Frame &frame);
 
 // Main chaos function
 bool chaosFrame(Frame &frame, int timeoutMs);
+#endif

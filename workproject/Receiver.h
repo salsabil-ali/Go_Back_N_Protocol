@@ -1,3 +1,5 @@
+#ifndef __ReceiverH
+#define __ReceiverH
 #include <iostream>
 #include <string>
 #include <fstream>
@@ -39,3 +41,5 @@ private:
 
 //     return 0;
 // }
+
+#endif
