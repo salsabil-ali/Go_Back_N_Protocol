@@ -1,8 +1,4 @@
-#include "frame.h"
-#include <iostream>
-#include <string>
-#include <vector>
-using namespace std;
+#include "frame.hpp"
 
 void Frame::display(ostream &out) const
 {
@@ -23,6 +19,7 @@ int FrameArchitect::calculateChecksum(FrameType type, int seq, int ack, const st
     {
         sum += (int)c;
     }
+
     return sum;
 }
 

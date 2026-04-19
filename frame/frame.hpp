@@ -2,7 +2,6 @@
 #include <iostream>
 #include <string>
 #include <vector>
-#include <ostream>
 
 enum FrameType
 {
@@ -18,15 +17,15 @@ struct Frame
     std::string payload;
     int checksum;
 
-    void display(ostream &cout) const; // done
+    void display(std::ostream &cout) const; // done
     // Overloaded output operator
-    friend ostream &operator<<(std::ostream &out, const Frame &aFrame);
+    friend std::ostream &operator<<(std::ostream &out, const Frame &aFrame);
 };
 
 class FrameArchitect
 {
 public:
-    //  Checksum Implementation
+    // Checksum Implementation
     // This calculates a simple sum of all integer values and characters in the payload
     // di 3a4an check  if the message changed or it as same
     int calculateChecksum(FrameType type, int seq, int ack, const std::string &data);
